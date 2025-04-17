@@ -1,0 +1,76 @@
+import { motion, animate, useInView } from "framer-motion"
+import { addPropertyControls, ControlType } from "framer"
+import React, { useEffect, useRef, useState } from "react"
+
+function MakeCounter({ from, to, colorCode, fontName, weight, size }) {
+    const nodeRef = useRef(null)
+    const isInView = useInView(nodeRef, { once: true })
+
+    useEffect(() => {
+        const node = nodeRef.current
+
+        const controls = animate(from, to, {
+            duration: 1.5,
+            onUpdate(value) {
+                node.textContent = value.toFixed(0)
+            },
+        })
+
+        return () => controls.stop()
+    }, [from, to, isInView])
+
+    return (
+        <div
+            style={{
+                color: colorCode,
+                font: fontName,
+                fontWeight: weight,
+                fontSize: size,
+            }}
+            ref={nodeRef}
+        />
+    )
+}
+
+export default function Counter(props) {
+    const [from, setFrom] = useState(props.from)
+    const [to, setTo] = useState(props.to)
+
+    return (
+        <MakeCounter
+            colorCode={props.color}
+            font={props.fontName}
+            weight={props.weight}
+            size={props.size}
+            from={from}
+            to={to}
+        />
+    )
+}
+
+addPropertyControls(Counter, {
+    from: {
+        defaultValue: 0,
+        type: ControlType.Number,
+    },
+    to: {
+        defaultValue: 900,
+        type: ControlType.Number,
+    },
+    color: {
+        type: ControlType.Color,
+        defaultValue: "#202122",
+    },
+    fontName: {
+        type: ControlType.String,
+        defaultValue: "Inter",
+    },
+    weight: {
+        defaultValue: 800,
+        type: ControlType.Number,
+    },
+    size: {
+        defaultValue: 42,
+        type: ControlType.Number,
+    },
+})
